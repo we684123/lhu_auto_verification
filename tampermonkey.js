@@ -8,6 +8,7 @@
 // @grant        GM_xmlhttpRequest
 // @namespace    none
 // @connect      script.google.com
+// @connect      script.googleusercontent.com
 // @run-at       document-end
 // @domain       https://script.google.com/
 // ==/UserScript==
@@ -18,14 +19,13 @@
   var account = ""; //選填，預設為空，你的龍華【帳號】，沒填不會幫忙輸入
   var password = ""; //選填，預設為空，你的龍華【密碼】，沒填不會幫忙輸入
   var identity = ""; //選填，預設為空，你的【提供用戶】身分碼(取得身分碼網址)
-
   var auto_login = false; //選填，預設為true，要不要自動按下 "登入"   (登入首頁)
   var auto_next = true; //選填，預設為true，要不要自動按下 "下一步" (gmail確認)
   var auto_check = true; //選填，預設為true，要不要自動按下 "確認"   (登入失敗頁面)
-  var reslog = true; //選填，預設為false，載入回應log?
+  var reslog = true; //選填，預設為false，載入回應log?  //目前無用
   //以上填完就好囉---------------------------------------------------
 
-  //以下給會的填，可快速將其他網站也串上來此系統。
+  //位置定義
   var login_page = "eportal.lhu.edu.tw/index.do";
   var input_account = document.getElementsByTagName('input')[0] ;
   var input_password = document.getElementsByTagName('input')[1] ;
@@ -55,16 +55,8 @@
       onload: function(response) {
         //console.log (response.responseText);
         console.log("get response");
-        var st = "終末";
-        var ed = "之地";
         try {
-          var tx2 = String(response.responseText);
-          var a = tx2.search(st);
-          var aa = st.length;
-          var r = tx2.length;
-          var g = tx2.substring(a, r);
-          var b = g.search(ed);
-          var ans = g.substring(aa, b);
+          var ans = JSON.parse(response.responseText)["return"];
           //====================================================================
           if (ans == "-1") {
             ans = "無資源，請自行輸入";
@@ -82,10 +74,8 @@
             input_password.value = password;
           }
         } catch (e) {
-          console.log(e);
-        }
-        if (reslog) {
-          console.log(tx2);
+            console.log("error text:");
+            console.log(e);
         }
         console.log("end print");
         if (ans != "請自行輸入") {
