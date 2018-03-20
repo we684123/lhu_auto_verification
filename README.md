@@ -11,7 +11,7 @@
 安裝完後請參閱下方"更改設定值"進行設定
 
 
-\\\\\歡迎提供沒在用的 GCP vision api key///
+\\\\\歡迎提供沒在用的 GCP vision api key///    
 身分碼(提供)申請網址在此：https://goo.gl/forms/F52TOt9aG6yz7D6A3    
 
 ---
