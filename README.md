@@ -5,6 +5,9 @@
 此為龍華科技大學專用，如果你不是該校人員，可以自己clone後改成適應你家網站的東西，改個位置就好(當然，誠懇希望勿濫用資源)    
 你甚至可以自己架一個後端來用，目前我這裡只公開前端。    
 
+    
+請先裝這個 "[Tampermonkey](http://tampermonkey.net/)"     
+在點這個連結安裝[簡單安裝連結](https://greasyfork.org/zh-TW/scripts/39780-auto-verification) (透過Greasyfork安裝)    
 
 \\\\\歡迎提供沒在用的 GCP vision api key///
 身分碼(提供)申請網址在此：https://goo.gl/forms/F52TOt9aG6yz7D6A3    
