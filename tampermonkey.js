@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         auto_verification
-// @version      1.0
+// @version      1.1
 // @description  auto_key_verification
 // @author       we684123
 // @match        https://eportal.lhu.edu.tw/index.do?*
@@ -109,7 +109,10 @@
           console.log("d02-d01");
           console.log(d02-d01);
         if (auto_login) {
-          login_button.click();
+          if (!(ans2 == "沒資源，請升級vip或手動輸入")) {
+            login_button.click();
+          }
+
         }
       }
     });
