@@ -15,11 +15,13 @@
 身分碼(提供)申請網址在此：https://goo.gl/forms/F52TOt9aG6yz7D6A3    
 
 ### 更改設定值
-1.點瀏覽器右上角這個圖示(或找到他直接點開)，後點選控制台
+1.點瀏覽器右上角這個圖示(或找到他直接點開)，後點選控制台    
 ![image](https://github.com/we684123/lhu_auto_verification/blob/master/%E5%9C%96%E5%BA%8A/2018-03-20%2020_20_41-.png?raw=true)
-2.點 "auto_verification" 開啟程式
+    
+2.點 "auto_verification" 開啟程式    
 ![image](https://github.com/we684123/lhu_auto_verification/blob/master/%E5%9C%96%E5%BA%8A/2018-03-20%2020_21_20-%E5%B7%B2%E5%AE%89%E8%A3%9D%E7%9A%84%E4%BD%BF%E7%94%A8%E8%80%85%E8%85%B3%E6%9C%AC.png?raw=true)
-3.依自己的需求更改
+
+3.依自己的需求更改    
 ![image](https://github.com/we684123/lhu_auto_verification/blob/master/%E5%9C%96%E5%BA%8A/2018-03-20%2020_21_42-.png?raw=true)
 ### 整體流程圖
 ![Imgur](https://github.com/we684123/lhu_auto_verification/blob/master/%E5%9C%96%E5%BA%8A/lhu%E9%A9%97%E8%AD%89%E7%A2%BC88.png?raw=true)    
