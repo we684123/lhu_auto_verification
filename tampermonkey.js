@@ -149,8 +149,8 @@
 
     var login_btn = document.getElementById('login_window_kit_trigger')
     var my_lib_btn = document.getElementById('shelf_link')
-    login_btn.addEventListener('click', trigger_iframe(account, password), false)
-    my_lib_btn.addEventListener('click', trigger_iframe(account, password), false)
+    login_btn.addEventListener('click', e => trigger_iframe(account, password), false)
+    my_lib_btn.addEventListener('click', e => trigger_iframe(account, password), false)
 
   } else {
     console.log("唉呀呀...失手了030....");
