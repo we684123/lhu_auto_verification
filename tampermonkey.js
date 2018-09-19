@@ -22,9 +22,10 @@
   var account = "123"; //選填，預設為空，你的龍華【帳號】，沒填不會幫忙輸入
   var password = "123456"; //選填，預設為空，你的龍華【密碼】，沒填不會幫忙輸入
   var identity = ""; //選填，預設為空，你的【提供用戶】身分碼(取得身分碼網址)
-  var auto_login = true; //必填，預設為true，要不要自動按下 "登入"   (登入首頁)
+  var auto_login = false; //必填，預設為true，要不要自動按下 "登入" (登入首頁)
   var auto_next = true; //必填，預設為true，要不要自動按下 "下一步" (gmail確認)
   var auto_check = true; //必填，預設為true，要不要自動按下 "確認"   (登入失敗頁面)
+  var lib_auto_login = false //必填，預設為true，要不要自動按下 "登入" (登入圖書館)
   var reslog = true; //必填，預設為false，載入回應log?  //目前無用
   var wait_second = 15; //必填，預設為15秒，最低為1，當你網頁載入慢到炸的時候，
   //此程式要等你的電腦多久，如果圖片一直載不下來，你的瀏覽器可能會跟你說有大量腳本在運行
@@ -52,13 +53,13 @@
     if (imgbase64.length < 30) {
       console.log("imgbase64.length < 30");
       if (wait_second < 1) { //用個防呆
-        wait_second = 1;
+        var wait_second = 1;
       }
       for (var i = 0; i < wait_second * 10; i++) {
         sleep(100); //0.1s
         console.log("i = " + i);
         console.log(img.complete);
-        imgbase64 = getBase64Image(img);
+        var imgbase64 = getBase64Image(img);
         if (imgbase64.length > 30) {
           break;
         }
@@ -71,33 +72,53 @@
     console.log("post_data：");
     console.log(post_data);
     //==========================================================================
-    var ans = post_to_gs(server_url, post_data)
-    var ans2 = "null";
-    if (ans == "沒資源，請升級vip或手動輸入") {
-      ans2 = "沒資源，請升級vip或手動輸入";
-    } else if (ans.length == 3) { //vision有時候會失誤，就當盡量救。
-      ans2 = "I" + ans;
-    } else {
-      ans2 = ans;
-    }
+    GM_xmlhttpRequest({ //post
+      method: "POST",
+      url: server_url,
+      data: post_data,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      onload: function(response) {
+        //console.log (response.responseText);
+        console.log("get response");
+        try {
+          var ans = JSON.parse(response.responseText)["return"];
+          console.log("ans = ");
+          console.log(ans);
+          var ans2 = "null";
+          //====================================================================
+          if (ans == "沒資源，請升級vip或手動輸入") {
+            ans2 = "沒資源，請升級vip或手動輸入";
+          } else if (ans.length == 3) { //vision有時候會失誤，就當盡量救。
+            ans2 = "I" + ans;
+          } else {
+            ans2 = ans;
+          }
+        } catch (e) {
+          console.log("error text:");
+          console.log(e);
+        }
+        console.log("end print");
+        input_verification.value = ans2; //寫入
+        if (account) { //有帳蜜填帳密
+          input_account.value = account;
+        }
+        if (password) { //有帳蜜填帳密
+          input_password.value = password;
+        }
+        var d02 = new Date();
+        //console.log(d02);
+        //console.log("d02-d01");
+        //console.log(d02 - d01);
+        if (auto_login) {
+          if (!(ans2 == "沒資源，請升級vip或手動輸入")) {
+            login_button.click();
+          }
 
-    //====================================================================
-    if (account) { //有帳密填帳密
-      input_account.value = account;
-    }
-    if (password) { //有帳密填帳密
-      input_password.value = password;
-    }
-    input_verification.value = ans2; //寫入
-    //var d02 = new Date();
-    //console.log(d02);
-    //console.log("d02-d01");
-    //console.log(d02 - d01);
-    if (auto_login) {
-      if (!(ans2 == "沒資源，請升級vip或手動輸入")) {
-        login_button.click();
+        }
       }
-    }
+    });
   } else if (String(location.href).search('eportal.lhu.edu.tw/login.do') > 1) {
     //這是如果有跳轉頁面的話才需要的，所以這裡就不模組化了。
     try {
@@ -114,22 +135,25 @@
 
     var ID = document.getElementById('LogLDAPIDTXSd')
     var PW = document.getElementById('LogLDAPPassTXSd')
-    if (account) { //有帳密填帳密
+    if (account) { //有帳蜜填帳密
       ID.value = account;
     }
-    if (password) { //有帳密填帳密
+    if (password) { //有帳蜜填帳密
       PW.value = password;
     }
     document.getElementById('Btn_Login').click()
   } else if (String(location.href).search('140.131.19.225/webpac/search.cfm') > 1) {
     // 所以這個網站什麼時候才會有SSL憑證......
+    var login_btn = document.getElementById('login_window_kit_trigger')
+    var my_lib_btn = document.getElementById('shelf_link')
+    login_btn.addEventListener('click',
+      e => trigger_iframe(account, password, server_url, identity, lib_auto_login), false)
+    my_lib_btn.addEventListener('click',
+      e => trigger_iframe(account, password, server_url, identity, lib_auto_login), false)
 
     console.log("進來了~~~");
 
-    var login_btn = document.getElementById('login_window_kit_trigger')
-    var my_lib_btn = document.getElementById('shelf_link')
-    login_btn.addEventListener('click', e => trigger_iframe(account, password), false)
-    my_lib_btn.addEventListener('click', e => trigger_iframe(account, password), false)
+
 
   } else {
     console.log("唉呀呀...失手了030....");
@@ -158,47 +182,89 @@ function sleep(milliseconds) {
   }
 }
 //=============================================================================
-function trigger_iframe(account, password) {
+function trigger_iframe(account, password, server_url, identity, lib_auto_login) {
   console.log("進來了~~~5555555");
   var iframe_name = 'fancybox-frame'
   var iframe_window = document.getElementById(iframe_name)
   iframe_window.addEventListener('load', function() {
+    var iframe_window_cl = iframe_window.contentWindow.document
     console.log("進來了~~~222");
     var iframe_id_name = 'hidid'
     var iframe_pw_name = 'password'
-    var iframe_id = iframe_window.contentWindow.document.getElementById(iframe_id_name)
-    var iframe_pw = iframe_window.contentWindow.document.getElementById(iframe_pw_name)
-    if (account) { //有帳密填帳密
+    var iframe_id = iframe_window_cl.getElementById(iframe_id_name)
+    var iframe_pw = iframe_window_cl.getElementById(iframe_pw_name)
+    if (account) { //有帳蜜填帳密
       iframe_id.value = account;
     }
-    if (password) { //有帳密填帳密
+    if (password) { //有帳蜜填帳密
       iframe_pw.value = password;
     }
-  }, false)
-}
-//=============================================================================
-function post_to_gs(server_url, post_data) {
-  GM_xmlhttpRequest({ //post
-    method: "POST",
-    url: server_url,
-    data: post_data,
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    onload: function(response) {
-      //console.log (response.responseText);
-      console.log("get response");
-      try {
-        var ans = JSON.parse(response.responseText)["return"];
-        console.log("ans = ");
-        console.log(ans);
-        return ans
-      } catch (e) {
-        console.log("error text:");
-        console.log(e);
+    //接下來處理圖片-----------------------------------------------
+    var lib_img = iframe_window_cl.getElementsByTagName('img')[0]
+    var lib_imgbase64 = getBase64Image(lib_img);
+    if (lib_imgbase64.length < 30) {
+      console.log("lib_imgbase64.length < 30");
+      if (wait_second < 1) { //用個防呆
+        var wait_second = 1;
       }
-      console.log("end print");
+      for (var i = 0; i < wait_second * 10; i++) {
+        sleep(100); //0.1s
+        console.log("i = " + i);
+        console.log(img.complete);
+        var lib_imgbase64 = getBase64Image(img);
+        if (imgbase64.length > 30) {
+          break;
+        }
+      }
     }
-  })
+    console.log(lib_imgbase64);
+
+    //之所以有下面這行這麼醜是因為gs傲嬌，搞成json居然不吃，只好字串處理了
+    var post_data = identity + "~" + String(lib_imgbase64);
+    console.log("post_data：");
+    console.log(post_data);
+    //-------------------------------------------------------------
+    //下面定義元素位置
+    var input_verification = iframe_window_cl.getElementById('validateCode')
+    var ck_btn = iframe_window_cl.getElementsByClassName('btn_small')[0]
+
+    GM_xmlhttpRequest({ //post
+      method: "POST",
+      url: server_url,
+      data: post_data,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      onload: function(response) {
+        //console.log (response.responseText);
+        console.log("get response");
+        console.log(response);
+        try {
+          var ans = JSON.parse(response.responseText)["return"];
+          console.log("ans = ");
+          console.log(ans);
+          var ans2 = "null";
+          //====================================================================
+          if (ans == "沒資源，請升級vip或手動輸入") {
+            ans2 = "沒資源，請升級vip或手動輸入";
+          } else if (ans.length == 3) { //vision有時候會失誤，就當盡量救。
+            ans2 = "I" + ans;
+          } else {
+            ans2 = ans;
+          }
+        } catch (e) {
+          console.log("error text:");
+          console.log(e);
+        }
+        console.log("end print");
+        input_verification.value = ans2; //寫入
+        if (lib_auto_login) {
+          if (!(ans2 == "沒資源，請升級vip或手動輸入")) {
+            ck_btn.click();
+          }
+        }
+      }
+    });
+  }, false)
 }
 //=============================================================================
