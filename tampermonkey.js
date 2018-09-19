@@ -43,7 +43,7 @@
 
   //=============================================================================
   if (String(location.href).search(login_page) > 1) {
-    var d01 = new Date();
+    //var d01 = new Date();
     //console.log(d01);
     var img = verification_image;
     var imgbase64 = getBase64Image(img);
@@ -52,13 +52,13 @@
     if (imgbase64.length < 30) {
       console.log("imgbase64.length < 30");
       if (wait_second < 1) { //用個防呆
-        var wait_second = 1;
+        wait_second = 1;
       }
       for (var i = 0; i < wait_second * 10; i++) {
         sleep(100); //0.1s
         console.log("i = " + i);
         console.log(img.complete);
-        var imgbase64 = getBase64Image(img);
+        imgbase64 = getBase64Image(img);
         if (imgbase64.length > 30) {
           break;
         }
@@ -71,54 +71,33 @@
     console.log("post_data：");
     console.log(post_data);
     //==========================================================================
-    GM_xmlhttpRequest({ //post
-      method: "POST",
-      url: server_url,
-      data: post_data,
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      onload: function(response) {
-        //console.log (response.responseText);
-        console.log("get response");
-        try {
-          var ans = JSON.parse(response.responseText)["return"];
-          console.log("ans = ");
-          console.log(ans);
-          var ans2 = "null";
-          //====================================================================
-          if (ans == "沒資源，請升級vip或手動輸入") {
-            ans2 = "沒資源，請升級vip或手動輸入";
-          } else if (ans.length == 3) { //vision有時候會失誤，就當盡量救。
-            ans2 = "I" + ans;
-          } else {
-            ans2 = ans;
-          }
-          //====================================================================
-          if (account) { //有帳蜜填帳密
-            input_account.value = account;
-          }
-          if (password) { //有帳蜜填帳密
-            input_password.value = password;
-          }
-        } catch (e) {
-          console.log("error text:");
-          console.log(e);
-        }
-        console.log("end print");
-        input_verification.value = ans2; //寫入
-        var d02 = new Date();
-        //console.log(d02);
-        console.log("d02-d01");
-        console.log(d02 - d01);
-        if (auto_login) {
-          if (!(ans2 == "沒資源，請升級vip或手動輸入")) {
-            login_button.click();
-          }
+    var ans = post_to_gs(server_url, post_data)
+    var ans2 = "null";
+    if (ans == "沒資源，請升級vip或手動輸入") {
+      ans2 = "沒資源，請升級vip或手動輸入";
+    } else if (ans.length == 3) { //vision有時候會失誤，就當盡量救。
+      ans2 = "I" + ans;
+    } else {
+      ans2 = ans;
+    }
 
-        }
+    //====================================================================
+    if (account) { //有帳密填帳密
+      input_account.value = account;
+    }
+    if (password) { //有帳密填帳密
+      input_password.value = password;
+    }
+    input_verification.value = ans2; //寫入
+    //var d02 = new Date();
+    //console.log(d02);
+    //console.log("d02-d01");
+    //console.log(d02 - d01);
+    if (auto_login) {
+      if (!(ans2 == "沒資源，請升級vip或手動輸入")) {
+        login_button.click();
       }
-    });
+    }
   } else if (String(location.href).search('eportal.lhu.edu.tw/login.do') > 1) {
     //這是如果有跳轉頁面的話才需要的，所以這裡就不模組化了。
     try {
@@ -135,10 +114,10 @@
 
     var ID = document.getElementById('LogLDAPIDTXSd')
     var PW = document.getElementById('LogLDAPPassTXSd')
-    if (account) { //有帳蜜填帳密
+    if (account) { //有帳密填帳密
       ID.value = account;
     }
-    if (password) { //有帳蜜填帳密
+    if (password) { //有帳密填帳密
       PW.value = password;
     }
     document.getElementById('Btn_Login').click()
@@ -189,12 +168,37 @@ function trigger_iframe(account, password) {
     var iframe_pw_name = 'password'
     var iframe_id = iframe_window.contentWindow.document.getElementById(iframe_id_name)
     var iframe_pw = iframe_window.contentWindow.document.getElementById(iframe_pw_name)
-    if (account) { //有帳蜜填帳密
+    if (account) { //有帳密填帳密
       iframe_id.value = account;
     }
-    if (password) { //有帳蜜填帳密
+    if (password) { //有帳密填帳密
       iframe_pw.value = password;
     }
   }, false)
+}
+//=============================================================================
+function post_to_gs(server_url, post_data) {
+  GM_xmlhttpRequest({ //post
+    method: "POST",
+    url: server_url,
+    data: post_data,
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    onload: function(response) {
+      //console.log (response.responseText);
+      console.log("get response");
+      try {
+        var ans = JSON.parse(response.responseText)["return"];
+        console.log("ans = ");
+        console.log(ans);
+        return ans
+      } catch (e) {
+        console.log("error text:");
+        console.log(e);
+      }
+      console.log("end print");
+    }
+  })
 }
 //=============================================================================
